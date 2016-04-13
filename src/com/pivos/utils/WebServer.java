@@ -406,6 +406,7 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 
 			@Override
 			public int compare(LiveChannelEntity arg0, LiveChannelEntity arg1) {
+				Log.i("res", "arg0 channelNr:"+ arg0.getChannelNr() + "arg1 channelNr: " + arg1.getChannelNr());
 				if(Integer.parseInt(arg0.getChannelNr()) > Integer.parseInt(arg1.getChannelNr()) ){
 					return 1;
 				}else{
