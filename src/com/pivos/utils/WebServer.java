@@ -308,10 +308,15 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 	private String getAllChannel(){
 		ArrayList<ChannelEntity> channelList = new ArrayList<ChannelEntity>();
 		ChannelEntity channel = null;
+		int CategoryNum = 0;
+		for (int i = 0; i < 3 ; i ++) {
+			channel = new ChannelEntity();
+			channelList.add(channel);
+		}
 
 		try {
 			String res = m_idvbService.getChannelList("");
-			Log.i("res", "res:"+res);
+			//Log.i("res", "res:"+res);
 			XmlPullParser parser = Xml.newPullParser();
 			try{
 				parser.setInput(new ByteArrayInputStream(res.getBytes("UTF-8")), "UTF-8");
@@ -330,7 +335,17 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 						case XmlPullParser.END_TAG:
 							if (parser.getName().equals("DVBContainer")) {
 								channel.setLiveChannels(getLiveChannelList(channel.getCategoryID()));
-								channelList.add(channel);
+								if(CategoryNum==0){
+									channelList.add(0,channel);
+									channelList.remove(3);
+								}else if(CategoryNum==1) {
+									channelList.add(0,channel);
+									channelList.remove(3);
+								}else if(CategoryNum==2){
+									channelList.add(2,channel);
+									channelList.remove(3);
+								}
+								CategoryNum++;
 							}
 							break;
 					}
@@ -402,6 +417,7 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		/*
 		Collections.sort(m_ret, new Comparator<LiveChannelEntity>() {
 
 			@Override
@@ -415,7 +431,7 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 			}
 		
 		});
-
+		*/
 		return m_ret;
 	}
 
