@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+     <drawable name="transparent">#00000000</drawable>
+     <color name="common_color_white">#FFFFFF</color>
+     <color name="common_color_grey">#90FFFFFF</color>
+     <color name="common_color_blue">#97FFFF</color>
+     <color name="common_color_grey_white">#4c5c6a</color>
+     <color name="background">#FF000000</color>
+     <!-- page bigTitle littleTitle  -->
+      
+     <color name="page_LittleTitle">#808489</color>
+      
+     <!-- the login name color -->
+     <color name="login_name_focus">#3c3c3c</color>
+     <color name="login_name_default">#d2d2d2</color>
+     <!-- can not select button-->
+     <color name="next_btn_unfocus">#747BB5</color>
+     <color name="about_text">#a4a5a6</color>
+     <color name="boot_tip_little">#89c7d9</color>
+         
+     <color name="transparent">#00ffffff</color>
+	<color name="color_text_normal">#80000000</color>
+	<color name="color_text_selected">#FFFFFFFF</color> 
+</resources>

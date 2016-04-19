@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+    
+     <RelativeLayout
+        android:id="@+id/settings_layout"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_height="wrap_content" >
+        
+     	<FrameLayout
+            android:id="@+id/layout_QQ"
+            android:layout_width="508dip"
+            android:layout_height="490dip"
+            android:layout_marginLeft="204dp"
+            android:visibility="visible" >
+            
+     	     <ImageView
+                android:id="@+id/QQ"
+                android:layout_width="207dp"
+                android:layout_height="307dp"
+                android:layout_marginLeft="104dp"
+                android:layout_marginTop="97dp"
+                android:background="@drawable/mainitem_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scaleType="centerInside"
+                android:nextFocusDown="@+id/QQ"
+                />
+     	    <TextView 
+     	        android:layout_width="207dp"
+                android:layout_height="37dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="104dp"
+                android:layout_marginBottom="100dp"
+                android:gravity="center"
+                android:textColor="@color/common_color_white"
+                android:visibility="gone"
+     	        />
+        </FrameLayout>    
+         <FrameLayout
+            android:id="@+id/layout_weChat"
+            android:layout_width="508dip"
+            android:layout_height="490dip"
+            android:layout_marginLeft="434dp"
+            android:visibility="visible" >
+            
+     	     <ImageView
+                android:id="@+id/weChat"
+                android:layout_width="207dp"
+                android:layout_height="307dp"
+                android:layout_marginLeft="104dp"
+                android:layout_marginTop="97dp"
+                android:background="@drawable/mainitem_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scaleType="centerInside"
+                android:nextFocusDown="@+id/weChat"
+                />
+     	    
+        </FrameLayout>   
+        <FrameLayout
+            android:id="@+id/layout_ignore"
+            android:layout_width="508dip"
+            android:layout_height="490dip"
+            android:layout_marginLeft="665dp"
+            android:visibility="visible" >
+            
+     	     <ImageView
+                android:id="@+id/ignore"
+                android:layout_width="207dp"
+                android:layout_height="307dp"
+                android:layout_marginLeft="104dp"
+                android:layout_marginTop="97dp"
+                android:background="@drawable/mainitem_default"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:scaleType="centerInside"
+                android:nextFocusRight="@+id/ignore"
+                />
+     	    
+        </FrameLayout>   
+       
+     </RelativeLayout>
+     <ImageView
+        android:id="@+id/white_boder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_border"
+        android:visibility="visible" />
+</FrameLayout>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.txbox.txsdk"
+    android:versionCode="118"
+    android:versionName="32" 
+    >
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SET_TIME_ZONE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+	<uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REBOOT" />
+    <uses-permission android:name="android.permission.ACCESS_CACHE_FILESYSTEM" />
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MASTER_CLEAR"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:persistent="true"
+        android:name="com.txbox.settings.common.TXbootApp"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+  
+        <activity
+            android:name="com.txbox.settings.launcher.bootsettings.BootActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask">
+            <intent-filter android:priority="200" >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+ 
+        <activity
+            android:name="com.txbox.settings.BootSettingActivity"
+            android:label="@string/app_name"
+            >
+            
+        </activity>
+        <activity android:name="com.txbox.settings.launcher.bootsettings.DetectNetworkActivity">
+           
+        </activity>
+         <activity android:name="com.txbox.settings.launcher.EthernetActivity"></activity>
+          <activity android:name="com.txbox.settings.launcher.LoginActivity">
+               
+          </activity>
+          <activity android:name="com.txbox.settings.launcher.bootsettings.WelcomeActivity"
+               android:configChanges="uiMode|orientation|screenSize|screenLayout|keyboard|keyboardHidden|navigation|touchscreen"
+               android:launchMode="singleTask"
+               android:screenOrientation="sensorLandscape">
+               <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+               </intent-filter>
+        </activity>
+          		
+           <activity android:name="com.txbox.settings.launcher.WirelessActivity">
+           </activity>
+          
+           <activity android:name="com.txbox.settings.launcher.ScreenCalibrationActivity">
+               
+           </activity>
+            <activity android:name="com.txbox.settings.test.InterfaceTest">
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.NetworkSetting">
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.NetworkSetting_Detecting">
+              
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.NetworkSetting_Bluetooth">
+              
+           </activity>
+            <activity android:name="com.txbox.settings.launcher.systemsettings.NetworkSetting_Speed_Detecting">
+              
+           </activity>
+            <activity android:name="com.txbox.settings.launcher.systemsettings.CommonSettings">
+              
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.SystemUpdateSettings">
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.AccountSetting">
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.ScreenSettings">
+              
+           </activity>
+             <activity android:name="com.txbox.settings.launcher.bootsettings.SelectLoginActivity">
+                
+           </activity>
+            <activity android:name="com.txbox.settings.launcher.systemsettings.SystemSettingsMain">
+                 
+           </activity>
+            <activity android:name="com.txbox.settings.launcher.bootsettings.ScreenSettingsActivity">
+              
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.About">
+              
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.systemsettings.PlaySettings">
+              
+           </activity>
+           
+           <activity 
+               android:theme="@style/tv_guide_style" 
+               android:name="com.txbox.settings.launcher.bootsettings.RestartTxPlayerActivity"
+               >
+               <intent-filter>
+               		<action android:name="tencent.video.restart"></action>
+               		<category android:name="android.intent.category.DEFAULT"/>
+                	<data android:scheme="data"></data> 
+                	<data android:mimeType="text/html"></data>
+            </intent-filter>
+           </activity>
+           <activity android:name="com.txbox.settings.launcher.bootsettings.TencentVideoLoginActivity">
+           		<intent-filter>  
+         			<action android:name="tencent.video.login"/>  
+         			<category android:name="android.intent.category.DEFAULT"/>  
+         			<data android:scheme="data"></data> 
+         			<data android:mimeType="text/html" />
+				</intent-filter>  
+				
+           </activity>
+           
+           <activity
+            android:name="com.go3c.videoplayer.MediaPlayerActivity"
+            android:configChanges="locale|orientation|keyboardHidden"
+            android:screenOrientation="landscape" />
+          	<activity
+	            android:name="com.go3c.videoplayer.AdPlayActivity"
+	            android:configChanges="locale|orientation|keyboardHidden"
+	            android:screenOrientation="landscape" >
+	            <intent-filter>  
+         			<action android:name="tencent.video.playad"/>  
+         			<category android:name="android.intent.category.DEFAULT"/>  
+         			<data android:scheme="data"></data> 
+         			<data android:mimeType="text/html" />
+				</intent-filter>
+			</activity>
+          	<activity 
+               android:theme="@style/tv_guide_style" 
+               android:name="com.txbox.settings.launcher.bootsettings.MtaActivity"
+               >
+               <intent-filter>
+               		<action android:name="tencent.video.reportmta"></action>
+               		<category android:name="android.intent.category.DEFAULT"/>
+                	<data android:scheme="data"></data> 
+                	<data android:mimeType="text/html"></data>
+            	</intent-filter>
+            </activity>
+           
+           <activity
+	            android:name="com.txbox.settings.launcher.WebViewActivity"
+	            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+	            <intent-filter>
+	                <action android:name="com.txbox.txsdk.WebViewActivity"/>
+	                <category android:name="android.intent.category.DEFAULT"/>
+	                <action android:name="android.intent.action.MAIN" />
+                	<data android:scheme="data"></data>
+                	<data android:mimeType="text/html" />
+	            </intent-filter>
+	        </activity>
+           <!-- -->
+            <receiver android:name="com.tencent.wseal.MessageReceiver" >
+        		<intent-filter>
+            		<action android:name="com.tencent.oma.push.ACTION_PUSH_MSG_RECEIVE" />
+        		</intent-filter>
+   			</receiver>
+           
+            <receiver android:name="com.txbox.settings.launcher.bootsettings.BootReceiver" >
+            	<intent-filter>
+                	<action android:name="android.intent.action.BOOT_COMPLETED" />
+                	<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                	<action android:name="com.txbox.txsdk.installed"/>
+            	</intent-filter>
+        	</receiver>
+        	<receiver android:name="com.txbox.settings.launcher.bootsettings.MtaReceiver" >
+        		<intent-filter>
+            		<action android:name="com.tencent.mtareport" />
+        		</intent-filter>
+   			</receiver>
+   			<receiver android:name="com.tencent.oma.push.BootstrapReceiver"
+   				android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+        		android:process=":push">
+    			<intent-filter>
+        			<action android:name="android.intent.action.BOOT_COMPLETED"/>
+        			<action android:name="android.intent.action.BATTERY_CHANGED"/>
+    			</intent-filter>
+			</receiver>
+
+			<receiver android:name="com.tencent.oma.push.PushAlarmReceiver"
+          		android:process=":push" /> 
+        	<service android:name="com.tencent.oma.push.PushService" 
+            	android:process=":push" />
+        	<service android:name="com.tencent.oma.push.notify.NotifyService"
+            	android:process=":push" />
+        	<service android:name="com.go3c.lighttpd.HttpService" 
+            	android:label="HttpServer"
+            	android:process="com.go3c.lighttpd" >
+            	<intent-filter>
+                	<action android:name="com.go3c.lighttpd.IHttpService" />
+            	</intent-filter> 
+        </service>
+	<service android:name="com.txbox.settings.service.DownLoadService"></service> 
+        <service android:name="com.txbox.settings.service.UpdateService"></service>
+	<service android:name="com.txbox.settings.service.NtpService"></service> 
+        <service android:name="com.pivos.cqdvbserver.CqDvbService"></service>		
+        <activity android:name="com.txbox.settings.launcher.bootsettings.EnterBoxActivity">
+        </activity>
+        
+        <activity android:name="com.txbox.settings.launcher.bootsettings.RemoteGuide"
+            android:launchMode="singleTask">
+        </activity>
+        <activity android:name="com.txbox.settings.launcher.bootsettings.RemoteGuide1"
+            android:launchMode="singleTask">
+        </activity>
+        <activity android:name="com.txbox.settings.launcher.bootsettings.RemoteAutoPair"
+            android:launchMode="singleTask">
+        </activity>
+        <activity android:name="com.txbox.settings.launcher.bootsettings.RemoteAutoPairFinished"
+            android:launchMode="singleTask">
+        </activity>
+              
+        <meta-data
+            android:name="TA_APPKEY" android:value="A3VA23DKRR4P" />
+        <meta-data
+            android:name="InstallChannel" android:value="play" />
+    </application>
+
+</manifest>

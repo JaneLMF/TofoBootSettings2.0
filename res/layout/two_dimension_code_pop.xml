@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400dp"
+    android:layout_height="430dp"
+    android:gravity="center"
+    android:orientation="vertical" 
+    android:background="@drawable/webchat_bg"
+    >
+    
+
+    <ImageView 
+        android:id="@+id/twodimenImg"
+         android:layout_width="250dp"
+         android:layout_height="250dp"
+         android:layout_marginTop="30dp"
+        />
+    <TextView 
+        android:id="@+id/tip"
+        android:layout_width="match_parent"
+         android:layout_height="70dp"
+         android:textColor="@color/common_color_white"
+         android:text="@string/useWebChatLogin_text"
+         android:textSize="22sp"
+         android:gravity="center"
+        />
+</LinearLayout>

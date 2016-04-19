@@ -1,0 +1,19 @@
+2013-11-14 13:20:56: (log.c.166) server started 
+2013-11-14 13:23:02: (mod_cgi.c.601) cgi died, pid: 5725 
+2013-11-14 13:23:08: (mod_cgi.c.601) cgi died, pid: 5747 
+2013-11-14 13:23:10: (mod_cgi.c.601) cgi died, pid: 5748 
+2013-11-14 13:23:14: (mod_cgi.c.601) cgi died, pid: 5749 
+2013-11-14 13:32:48: (server.c.1230) logfiles cycled UID = 0 PID = 0 
+2013-11-14 13:46:58: (server.c.1546) server stopped by UID = 0 PID = 6405 
+2013-11-14 13:47:26: (log.c.166) server started 
+2013-11-14 13:48:13: (mod_cgi.c.601) cgi died, pid: 6474 
+2013-11-14 13:58:29: (server.c.1546) server stopped by UID = 0 PID = 6531 
+2013-11-14 13:59:09: (log.c.166) server started 
+2013-11-14 14:00:00: (server.c.1230) logfiles cycled UID = 0 PID = 0 
+2013-11-14 14:00:24: (server.c.1546) server stopped by UID = 0 PID = 6584 
+2013-11-14 14:01:01: (log.c.166) server started 
+2013-11-14 15:20:51: (E:/Go3cDmc/jni/src/log.c.166) server started 
+2013-11-14 15:21:10: (E:/Go3cDmc/jni/src/mod_cgi.c.601) cgi died, pid: 9959 
+2013-11-14 15:28:28: (E:/Go3cDmc/jni/src/log.c.166) server started 
+2013-11-14 15:29:33: (E:/Go3cDmc/jni/src/mod_cgi.c.601) cgi died, pid: 10061 
+2013-11-14 16:18:30: (E:/Go3cDmc/jni/src/server.c.1549) server stopped by UID = 0 PID = 138 
