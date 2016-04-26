@@ -14,6 +14,7 @@ import com.pivos.beans.EpgEntity;
 import com.pivos.beans.LiveChannelEntity;
 import com.pivos.beans.PlayInfoEntity;
 import com.pivos.beans.ShiftProgramEntity;
+import com.pivos.beans.TimeShiftProgramEntity;
 import com.pivos.beans.VODProgramEntity;
 import com.pivos.beans.VodCategoryEntity;
 import com.txbox.settings.common.TXbootApp;
@@ -31,6 +32,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -213,6 +215,11 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 			int startIndex = Integer.parseInt(params.getParameter("startindex").getValue());
 			int maxCount = Integer.parseInt(params.getParameter("maxcount").getValue());
 			String tsp = getTimeShiftPrograms(channelNr, ContentType_TimeShift, startIndex,maxCount);
+			if(tsp.contains("serviceid")){
+				tsp = getTimeShiftProgramsByServiceId(channelNr);
+			}else{
+				tsp = "[]";
+			}
 			httpRes.setContent(tsp);
 		}
 		else if(requestName.equals("getbackwatchprograms")) {//获取指定指定频道的回看节目列表
@@ -528,7 +535,53 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 
 		return new Gson().toJson(m_ret);
 	}
-
+	
+	//获得指定 Service ID 的时移节目列表
+	public String getTimeShiftProgramsByServiceId(String serviceId){
+		ArrayList<TimeShiftProgramEntity> m_ret = new ArrayList<TimeShiftProgramEntity>();
+		TimeShiftProgramEntity timeShiftProgramEntity = null;
+		try{
+			String res = m_ivodService.getTimeShiftProgramsByServiceId(serviceId);
+			Log.i("res", "res:" + res);
+			XmlPullParser parser = Xml.newPullParser();
+			parser.setInput(new ByteArrayInputStream(res.getBytes("UTF-8")), "UTF-8");
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT){
+				switch(eventType){
+					case XmlPullParser.START_DOCUMENT:
+						break;
+					case XmlPullParser.START_TAG:
+						if(parser.getName().equals("TimeShiftProgram")){
+							timeShiftProgramEntity = new TimeShiftProgramEntity();
+							timeShiftProgramEntity.setId(parser.getAttributeValue(null, "id"));
+							timeShiftProgramEntity.setParentid(parser.getAttributeValue(null, "parentid"));
+							timeShiftProgramEntity.setName(parser.getAttributeValue(null, "name"));
+							timeShiftProgramEntity.setDescription(parser.getAttributeValue(null, "description"));
+							timeShiftProgramEntity.setLongDescription(parser.getAttributeValue(null, "longDescription"));
+							timeShiftProgramEntity.setPlayURLs(parser.getAttributeValue(null, "playURLs"));
+							timeShiftProgramEntity.setChannelName(parser.getAttributeValue(null, "channelName"));
+							timeShiftProgramEntity.setLogoURL(parser.getAttributeValue(null, "logoURL"));
+							timeShiftProgramEntity.setStartTime(parser.getAttributeValue(null, "startTime"));
+							timeShiftProgramEntity.setEndTime(parser.getAttributeValue(null, "endTime"));
+							timeShiftProgramEntity.setServiceid(parser.getAttributeValue(null, "serviceid"));
+							timeShiftProgramEntity.setFmEmbeddedXML(parser.getAttributeValue(null, "fmEmbeddedXML"));
+						}
+						break;
+					case XmlPullParser.END_TAG:
+						if(parser.getName().equals("") && timeShiftProgramEntity != null){
+							m_ret.add(timeShiftProgramEntity);
+							timeShiftProgramEntity = null;
+						}
+						break;
+				}
+				eventType = parser.next();
+			}
+		}catch(Exception ex){
+			Log.e("res", "Exception by getTimeShiftByServiceId:", ex);
+		}
+		return new Gson().toJson(m_ret);
+	}
+	
 	//获取指定逻辑频道号的时移节目列表
 	public String getTimeShiftPrograms(String serviceId,int contentType,int startIndex,int maxCount){
 		ArrayList<ShiftProgramEntity> m_ret = new ArrayList<ShiftProgramEntity>();
