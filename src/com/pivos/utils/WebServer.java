@@ -10,6 +10,7 @@ import com.baustem.service.epgnavigation.IEPGNavigation;
 import com.baustem.service.vodnavigation.IVODNavigation;
 import com.baustem.service.vodstream.IVODStream;
 import com.pivos.beans.ChannelEntity;
+import com.pivos.beans.EPGEventEntity;
 import com.pivos.beans.EpgEntity;
 import com.pivos.beans.LiveChannelEntity;
 import com.pivos.beans.PlayInfoEntity;
@@ -215,11 +216,11 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 			int startIndex = Integer.parseInt(params.getParameter("startindex").getValue());
 			int maxCount = Integer.parseInt(params.getParameter("maxcount").getValue());
 			String tsp = getTimeShiftPrograms(channelNr, ContentType_TimeShift, startIndex,maxCount);
-			if(tsp.contains("serviceid")){
-				tsp = getTimeShiftProgramsByServiceId(channelNr);
-			}else{
-				tsp = "[]";
-			}
+			httpRes.setContent(tsp);
+		}
+		else if(requestName.equals("getTimeShiftProgramsByServiceId")){
+			String serviceid = params.getParameter("serviceid").getValue();
+			String tsp = getTimeShiftProgramsByServiceId(serviceid);
 			httpRes.setContent(tsp);
 		}
 		else if(requestName.equals("getbackwatchprograms")) {//获取指定指定频道的回看节目列表
@@ -538,8 +539,8 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 	
 	//获得指定 Service ID 的时移节目列表
 	public String getTimeShiftProgramsByServiceId(String serviceId){
-		ArrayList<TimeShiftProgramEntity> m_ret = new ArrayList<TimeShiftProgramEntity>();
-		TimeShiftProgramEntity timeShiftProgramEntity = null;
+		ArrayList<EPGEventEntity> m_ret = new ArrayList<EPGEventEntity>();
+		EPGEventEntity epgEventEntity = null;
 		try{
 			String res = m_ivodService.getTimeShiftProgramsByServiceId(serviceId);
 			Log.i("res", "res:" + res);
@@ -551,26 +552,21 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 					case XmlPullParser.START_DOCUMENT:
 						break;
 					case XmlPullParser.START_TAG:
-						if(parser.getName().equals("TimeShiftProgram")){
-							timeShiftProgramEntity = new TimeShiftProgramEntity();
-							timeShiftProgramEntity.setId(parser.getAttributeValue(null, "id"));
-							timeShiftProgramEntity.setParentid(parser.getAttributeValue(null, "parentid"));
-							timeShiftProgramEntity.setName(parser.getAttributeValue(null, "name"));
-							timeShiftProgramEntity.setDescription(parser.getAttributeValue(null, "description"));
-							timeShiftProgramEntity.setLongDescription(parser.getAttributeValue(null, "longDescription"));
-							timeShiftProgramEntity.setPlayURLs(parser.getAttributeValue(null, "playURLs"));
-							timeShiftProgramEntity.setChannelName(parser.getAttributeValue(null, "channelName"));
-							timeShiftProgramEntity.setLogoURL(parser.getAttributeValue(null, "logoURL"));
-							timeShiftProgramEntity.setStartTime(parser.getAttributeValue(null, "startTime"));
-							timeShiftProgramEntity.setEndTime(parser.getAttributeValue(null, "endTime"));
-							timeShiftProgramEntity.setServiceid(parser.getAttributeValue(null, "serviceid"));
-							timeShiftProgramEntity.setFmEmbeddedXML(parser.getAttributeValue(null, "fmEmbeddedXML"));
+						if(parser.getName().equals("EPGEvent")){
+							epgEventEntity = new EPGEventEntity();
+							epgEventEntity.setEventId(parser.getAttributeValue(null, "eventId"));
+							epgEventEntity.setEventName(parser.getAttributeValue(null, "eventName"));
+							epgEventEntity.setServiceid(parser.getAttributeValue(null, "serviceid"));
+							epgEventEntity.setStartTime(parser.getAttributeValue(null, "startTime"));
+							epgEventEntity.setEndTime(parser.getAttributeValue(null, "endTime"));
+							epgEventEntity.setChannelNr(parser.getAttributeValue(null, "channelNr"));
+							epgEventEntity.setChannelName(parser.getAttributeValue(null, "channelName"));
 						}
 						break;
 					case XmlPullParser.END_TAG:
-						if(parser.getName().equals("") && timeShiftProgramEntity != null){
-							m_ret.add(timeShiftProgramEntity);
-							timeShiftProgramEntity = null;
+						if(epgEventEntity != null){
+							m_ret.add(epgEventEntity);
+							epgEventEntity = null;
 						}
 						break;
 				}
