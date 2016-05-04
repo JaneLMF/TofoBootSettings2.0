@@ -9,6 +9,7 @@ public class MessageUtil {
 	public static String MessageType_ERROR = "Error";
 
 	public static String messegebox[][] = {
+
 			{"CA", "1002", "节目未授权", "Info"},
 			{"CA", "1007", "未插入智能卡", "Warning"},
 			{"CA", "1008", "无效智能卡", "Warning"},

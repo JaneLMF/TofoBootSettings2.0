@@ -25,6 +25,7 @@ public class TableShowView extends View {
 
 	private Context c;
 	private WindowManager mWM; // WindowManager
+
 	private WindowManager.LayoutParams mWMParams; // WindowManager����
 	private View win;
 	int tag = 0;
@@ -107,7 +108,6 @@ public class TableShowView extends View {
 		
 		
 		isVisible = true;
-		// ��������view WindowManager����
 		mWM = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
 		win = LayoutInflater.from(c).inflate(R.layout.installation_tips, null);
 		win.setBackgroundColor(Color.TRANSPARENT);
@@ -122,14 +122,14 @@ public class TableShowView extends View {
 
 		WindowManager wm = mWM;
 		
-		wmParams.type = 2002; // type�ǹؼ�������2002��ʾϵͳ�����ڣ���Ҳ��������2003
+		wmParams.type = 2002;
 		wmParams.flags = 40;
 
 		wmParams.width = 615;
 
 		wmParams.height = 96;
 
-		wmParams.format = -3; // ͸��
+		wmParams.format = -3; 
 		wmParams.x =  DensityUtil.dip2px(c, 0);
 		wmParams.y =  DensityUtil.dip2px(c, -350);
 		if (strText != null){

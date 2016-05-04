@@ -254,4 +254,6 @@
 	<string name="bt_opencgame_sucess">开通云游戏成功，请重新打开云游戏</string>
 	<string name="opencgame_cardid_empty">开通码不能为空</string>
 	<string name="update_dialog_forceupdate">检查到新版本，即将为你重启盒子以完成升级</string>
+	<string name="title_alert">提示信息</string>
+	<string name="ok">确定</string>
 </resources>

@@ -45,6 +45,8 @@ import com.txbox.settings.utils.Utils;
 import com.txbox.settings.utils.XmlConfTools;
 import com.txbox.txsdk.R;
 import com.txbox.settings.common.SystemInfoManager;
+import com.tvxmpp.XMPPService;
+import com.tvxmpp.util.L;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -108,7 +110,10 @@ public class BootReceiver extends BroadcastReceiver {
 //        Toast.makeText(context, "开机启动完成，检查登录信息是否过期", Toast.LENGTH_SHORT).show();
 		if ("android.intent.action.BOOT_COMPLETED".equals(action) || "com.txbox.txsdk.installed".equals(action)) {
 			CheckEth();
-			/*将guid从/sdcard/Android目录复制到/data/data 目录*/
+			
+			startXMPPService();
+			
+			/*灏唃uid浠�/sdcard/Android鐩綍澶嶅埗鍒�/data/data 鐩綍*/
 			Utils.initInstalledData(ConfigManager.GUID_INII_PATH_OLD,ConfigManager.GUID_INII_PATH);		
 			String cmd = "chmod 666 " + ConfigManager.GUID_INII_PATH;
 			Utils.runCommand(cmd);
@@ -124,16 +129,18 @@ public class BootReceiver extends BroadcastReceiver {
 			initDefaultInputMethod(context);
 			app.startCyberHTTP(context);
 			h.sendEmptyMessage(STARTGATEWAYSERVICE);
+			
 				
 		}else if(action.equals("android.net.conn.CONNECTIVITY_CHANGE")){
 			NetworkInfo networkInfo = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO); 
         	ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);   
             NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+            startXMPPService();
             if(activeNetInfo!=null && activeNetInfo.isConnected() /*&& activeNetInfo.getType() != networkInfo.getType()*/){
             		startDownLoadService();
             		CheckAccessTokenValid();
             		initBox(context);
-            		//上传crash信息
+            		//涓婁紶crash淇℃伅
             		//upLoadCrash();
             		//downLoadGameList();
             		SyncTime();
@@ -157,7 +164,7 @@ public class BootReceiver extends BroadcastReceiver {
 	}
 	
 	private void startGateWayService() {
-        //绑定DVBNavigation
+        //缁戝畾DVBNavigation
         m_serviceCon_dvbNavigation = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -174,12 +181,12 @@ public class BootReceiver extends BroadcastReceiver {
         boolean result = app.bindService(new Intent("com.baustem.service.dvbnavigation.DVBNavigation"),
                 m_serviceCon_dvbNavigation, Context.BIND_AUTO_CREATE);
         if (!result) {
-            Log.i("res", "绑定DVBNavigation fail");
+            Log.i("res", "缁戝畾DVBNavigation fail");
             return;
         }
-        Log.i("res", "绑定DVBNavigation success");
+        Log.i("res", "缁戝畾DVBNavigation success");
 
-        //绑定EPGNavigation
+        //缁戝畾EPGNavigation
         m_serviceCon_epgNavigation = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -196,12 +203,12 @@ public class BootReceiver extends BroadcastReceiver {
         result = app.bindService(new Intent("com.baustem.service.epgnavigation.EPGNavigation"),
                 m_serviceCon_epgNavigation, Context.BIND_AUTO_CREATE);
         if (!result) {
-            Log.i("res", "绑定EPGNavigation fail");
+            Log.i("res", "缁戝畾EPGNavigation fail");
             return;
         }
-        Log.i("res", "绑定EPGNavigation success");
+        Log.i("res", "缁戝畾EPGNavigation success");
 
-        //绑定VODNavigation
+        //缁戝畾VODNavigation
         m_serviceCon_vodNavigation = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -219,12 +226,12 @@ public class BootReceiver extends BroadcastReceiver {
         result = app.bindService(new Intent("com.baustem.service.vodnavigation.VODNavigation"),
                 m_serviceCon_vodNavigation, Context.BIND_AUTO_CREATE);
         if (!result) {
-            Log.i("res", "绑定VODNavigation fail");
+            Log.i("res", "缁戝畾VODNavigation fail");
             return;
         }
-        Log.i("res", "绑定VODNavigation success");
+        Log.i("res", "缁戝畾VODNavigation success");
 
-        //绑定VODStreamNavigation
+        //缁戝畾VODStreamNavigation
         m_serviceCon_vodStreamNavigation = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -241,10 +248,10 @@ public class BootReceiver extends BroadcastReceiver {
         result = app.bindService(new Intent("com.baustem.service.vodstream.VODStream"),
                 m_serviceCon_vodStreamNavigation, Context.BIND_AUTO_CREATE);
         if (!result) {
-            Log.i("res", "绑定VODStreamNavigation fail");
+            Log.i("res", "缁戝畾VODStreamNavigation fail");
             return;
         }
-        Log.i("res", "绑定VODStreamNavigation success");
+        Log.i("res", "缁戝畾VODStreamNavigation success");
     }
 
     public static IDVBNavigation getDvbService() { return m_idvbService; }
@@ -265,16 +272,21 @@ public class BootReceiver extends BroadcastReceiver {
 		Intent i = new Intent(mContext,UpdateService.class);
 		mContext.startService(i);
 	}
+	private void startXMPPService() {
+		L.d("BootReceiver startXMPPService");
+		Intent i = new Intent(mContext, XMPPService.class);
+		mContext.startService(i);
+	}
 	/**
 	 * 
-	 * @描述: 检查accesstoken是否过期
-	 * @方法名: CheckAccessTokenValid
-	 * @返回类型 void
-	 * @创建人 Administrator
-	 * @创建时间 2014-9-4下午12:26:27	
-	 * @修改人 Administrator
-	 * @修改时间 2014-9-4下午12:26:27	
-	 * @修改备注 
+	 * @鎻忚堪: 妫�鏌ccesstoken鏄惁杩囨湡
+	 * @鏂规硶鍚�: CheckAccessTokenValid
+	 * @杩斿洖绫诲瀷 void
+	 * @鍒涘缓浜� Administrator
+	 * @鍒涘缓鏃堕棿 2014-9-4涓嬪崍12:26:27	
+	 * @淇敼浜� Administrator
+	 * @淇敼鏃堕棿 2014-9-4涓嬪崍12:26:27	
+	 * @淇敼澶囨敞 
 	 * @since
 	 * @throws
 	 */
@@ -286,7 +298,7 @@ public class BootReceiver extends BroadcastReceiver {
 				// TODO Auto-generated method stub
 				try {
 					if(userbean!=null){
-						if(userbean.getRet()==100014){//登录信息已过期，清除原来保存登录信息
+						if(userbean.getRet()==100014){//鐧诲綍淇℃伅宸茶繃鏈燂紝娓呴櫎鍘熸潵淇濆瓨鐧诲綍淇℃伅
 							clearLoginInfo();
 						}
 					}
@@ -307,14 +319,14 @@ public class BootReceiver extends BroadcastReceiver {
 	}
 	/**
 	 * 
-	 * @描述:清空上次登录信息
-	 * @方法名: clearLoginInfo
-	 * @返回类型 void
-	 * @创建人 Administrator
-	 * @创建时间 2014-9-4下午3:28:57	
-	 * @修改人 Administrator
-	 * @修改时间 2014-9-4下午3:28:57	
-	 * @修改备注 
+	 * @鎻忚堪:娓呯┖涓婃鐧诲綍淇℃伅
+	 * @鏂规硶鍚�: clearLoginInfo
+	 * @杩斿洖绫诲瀷 void
+	 * @鍒涘缓浜� Administrator
+	 * @鍒涘缓鏃堕棿 2014-9-4涓嬪崍3:28:57	
+	 * @淇敼浜� Administrator
+	 * @淇敼鏃堕棿 2014-9-4涓嬪崍3:28:57	
+	 * @淇敼澶囨敞 
 	 * @since
 	 * @throws
 	 */
@@ -331,7 +343,7 @@ public class BootReceiver extends BroadcastReceiver {
 		Utils.runCommand(cmd);
 	}
 	/**
-	 * 保存屏保的默认图片
+	 * 淇濆瓨灞忎繚鐨勯粯璁ゅ浘鐗�
 	 */
     
 	private void SaveScreensaverPhotoLocal(){
@@ -388,7 +400,7 @@ public class BootReceiver extends BroadcastReceiver {
 		}
 	}
 	private void SavePriorityApk(){
-		//优先级
+		//浼樺厛绾�
 		setParams(ConfigManager.SCREENSAVER_PATH,"screensaverpriority", "1");
 		setParams(ConfigManager.XMLCONF_PATH,"allowlocalapk", "1");
 	}
@@ -398,7 +410,7 @@ public class BootReceiver extends BroadcastReceiver {
 		
 		final AppDao dao = AppDao.getInstance(mContext);
 
-		// 定时执行的任务
+		// 瀹氭椂鎵ц鐨勪换鍔�
 		if(task == null){
 			 task = new TimerTask() {
 				public void run() {
@@ -408,8 +420,8 @@ public class BootReceiver extends BroadcastReceiver {
 								@Override
 								public void onCommonResultFinished(CommonReturn commonReturn) {
 									if (commonReturn != null) {
-										if ("0".equals(commonReturn.getCode())) {// 如果上传成功，则把该记录从本地删除
-											// 删除记录
+										if ("0".equals(commonReturn.getCode())) {// 濡傛灉涓婁紶鎴愬姛锛屽垯鎶婅璁板綍浠庢湰鍦板垹闄�
+											// 鍒犻櫎璁板綍
 											dao.delCrashById(commonReturn.getId());
 											task = null;
 										}
@@ -423,12 +435,12 @@ public class BootReceiver extends BroadcastReceiver {
 				
 			};
 	
-			// 创建一个定时器
+			// 鍒涘缓涓�涓畾鏃跺櫒
 			Timer timer = new Timer();
-			timer.schedule(task, 0, 60 * 60 * 1000);// 1小时定时更新一次
+			timer.schedule(task, 0, 60 * 60 * 1000);// 1灏忔椂瀹氭椂鏇存柊涓�娆�
 		}
 
-		System.out.println("-->info：已将crash信息同步至服务器！\n");
+		System.out.println("-->info锛氬凡灏哻rash淇℃伅鍚屾鑷虫湇鍔″櫒锛乗n");
 	}
 
 	private void initDefaultInputMethod(Context context){
@@ -472,14 +484,14 @@ public class BootReceiver extends BroadcastReceiver {
 	
 	/**
 	 * 
-	 * @描述: 获取guid
-	 * @方法名: initBox
-	 * @返回类型 void
-	 * @创建人 Administrator
-	 * @创建时间 2014-9-10上午11:45:35	
-	 * @修改人 Administrator
-	 * @修改时间 2014-9-10上午11:45:35	
-	 * @修改备注 
+	 * @鎻忚堪: 鑾峰彇guid
+	 * @鏂规硶鍚�: initBox
+	 * @杩斿洖绫诲瀷 void
+	 * @鍒涘缓浜� Administrator
+	 * @鍒涘缓鏃堕棿 2014-9-10涓婂崍11:45:35	
+	 * @淇敼浜� Administrator
+	 * @淇敼鏃堕棿 2014-9-10涓婂崍11:45:35	
+	 * @淇敼澶囨敞 
 	 * @since
 	 * @throws
 	 */
@@ -548,14 +560,14 @@ public class BootReceiver extends BroadcastReceiver {
 	}  
 	/**
 	 * 
-	 * @描述: 未来电视认证
-	 * @方法名: icntvAuth
-	 * @返回类型 void
-	 * @创建人 Administrator
-	 * @创建时间 2015-8-12上午11:45:35	
-	 * @修改人 Administrator
-	 * @修改时间 2015-8-12上午11:45:35	
-	 * @修改备注 
+	 * @鎻忚堪: 鏈潵鐢佃璁よ瘉
+	 * @鏂规硶鍚�: icntvAuth
+	 * @杩斿洖绫诲瀷 void
+	 * @鍒涘缓浜� Administrator
+	 * @鍒涘缓鏃堕棿 2015-8-12涓婂崍11:45:35	
+	 * @淇敼浜� Administrator
+	 * @淇敼鏃堕棿 2015-8-12涓婂崍11:45:35	
+	 * @淇敼澶囨敞 
 	 * @since
 	 * @throws
 	*/

@@ -250,7 +250,15 @@
         <activity android:name="com.txbox.settings.launcher.bootsettings.RemoteAutoPairFinished"
             android:launchMode="singleTask">
         </activity>
-              
+        <activity
+            android:name="com.tvxmpp.ui.DialogShowView"
+            android:theme="@style/tv_dialog_style" >
+        </activity>
+
+        <service android:name="com.tvxmpp.XMPPService" >
+        </service>
+        <service android:name="com.tvxmpp.WindowService" >
+        </service>                    
         <meta-data
             android:name="TA_APPKEY" android:value="A3VA23DKRR4P" />
         <meta-data

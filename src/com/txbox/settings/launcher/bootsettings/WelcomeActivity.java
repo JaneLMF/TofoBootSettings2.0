@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tvxmpp.XMPPService;
+import com.tvxmpp.util.L;
 import com.txbox.txsdk.R;
 import com.txbox.settings.common.LocalInfor;
 import com.txbox.settings.common.NetworkManager;
@@ -92,7 +94,15 @@ public class WelcomeActivity extends Activity{
 		app = (TXbootApp) getApplicationContext();
 		initData();
 		createFile();
+		
+		//startXMPPService();
 	}
+	
+	/*private void startXMPPService() {
+		L.d("BootReceiver startXMPPService");
+		Intent i = new Intent(mContext, XMPPService.class);
+		mContext.startService(i);
+	}*/
 	
 	@Override
 	protected void onStart() {

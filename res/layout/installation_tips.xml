@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <LinearLayout 
+        android:id="@+id/main_ll"
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:orientation="horizontal"
+    	android:background="@drawable/msg_tip_bg"
+    	android:gravity="center"
+        >
+        <ImageView 
+            android:layout_width="20dp"
+    		android:layout_height="20dp"
+    		android:src="@drawable/download_icon"
+    		android:layout_marginLeft="50dp"
+    		android:layout_marginTop="5dp"
+    		android:visibility="gone"
+            />
+	    <TextView
+	        android:id="@+id/text"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:singleLine="true"
+	        android:ellipsize="middle"
+	        android:gravity="center"
+	        android:textColor="#FFFFFF"
+	        android:paddingTop="3dp"
+	        android:textSize="14sp" 
+       />
+</LinearLayout>
+
+    <ImageView
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:background="#FFFFFF"
+        android:clickable="false"
+        android:focusable="false" 
+        android:visibility="visible"/>
+
+    <TextView
+        android:id="@+id/appnumtips"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:layout_width="350dp"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/appline"
+        android:layout_width="350dp"
+        android:layout_height="1dp"
+        android:background="#FFFFFF"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <ListView
+        android:id="@+id/installapplist"
+        android:layout_width="350dp"
+        android:layout_height="178dp"
+        android:clickable="false"
+        android:divider="@drawable/pointedsongs_diver"
+        android:focusable="false"
+        android:listSelector="@null"
+        android:scrollbars="vertical" />
+
+</LinearLayout>
