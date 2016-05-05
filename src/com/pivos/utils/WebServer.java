@@ -317,14 +317,14 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 		ArrayList<ChannelEntity> channelList = new ArrayList<ChannelEntity>();
 		ChannelEntity channel = null;
 		int CategoryNum = 0;
-		for (int i = 0; i < 3 ; i ++) {
+		for (int i = 0; i < 4 ; i ++) {
 			channel = new ChannelEntity();
 			channelList.add(channel);
 		}
 
 		try {
 			String res = m_idvbService.getChannelList("");
-			//Log.i("res", "res:"+res);
+			Log.i("res", "getAllChannel res:"+res);
 			XmlPullParser parser = Xml.newPullParser();
 			try{
 				parser.setInput(new ByteArrayInputStream(res.getBytes("UTF-8")), "UTF-8");
@@ -345,13 +345,16 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 								channel.setLiveChannels(getLiveChannelList(channel.getCategoryID()));
 								if(CategoryNum==0){
 									channelList.add(0,channel);
-									channelList.remove(3);
+									channelList.remove(4);
 								}else if(CategoryNum==1) {
 									channelList.add(0,channel);
-									channelList.remove(3);
+									channelList.remove(4);
 								}else if(CategoryNum==2){
 									channelList.add(2,channel);
-									channelList.remove(3);
+									channelList.remove(4);
+								}else if(CategoryNum == 3){
+									channelList.add(3, channel);
+									channelList.remove(4);
 								}
 								CategoryNum++;
 							}
