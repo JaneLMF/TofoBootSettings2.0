@@ -12,6 +12,7 @@ import com.baustem.service.vodstream.IVODStream;
 import com.pivos.beans.ChannelEntity;
 import com.pivos.beans.EPGEventEntity;
 import com.pivos.beans.EpgEntity;
+import com.pivos.beans.GeneralContainerEntity;
 import com.pivos.beans.LiveChannelEntity;
 import com.pivos.beans.PlayInfoEntity;
 import com.pivos.beans.ShiftProgramEntity;
@@ -305,11 +306,69 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 			ReportHelper.report(app, requestParams);
 			httpRes.setContent("{\"code\":0,\"ret\":0,descript}");
 		}
+		else if(requestName.equals("getContent")){
+			String contentid = params.getParameter("contentid").getValue();
+			int contentType = Integer.parseInt(params.getParameter("contentType").getValue());
+			String result = "not found contentType";
+			switch (contentType) {
+			case 0://视频点播
+				result = getContentByVod(contentid, contentType);
+				break;
+			default:
+				break;
+			}
+			httpRes.setContent(result);
+		}
 		else {
 			httpRes.setContent("not found " + requestName + " !");
 		}
-
 		httpReq.post(httpRes);
+	}
+
+	private String getContentByVod(String contentid, int contentType) {
+		ArrayList<GeneralContainerEntity> entitys = new ArrayList<GeneralContainerEntity>();
+		GeneralContainerEntity entity = null;
+		try {
+			String res = m_ivodService.getContent(contentid, contentType);
+			Log.d("res", "getContentByVod :" + res);
+			
+			XmlPullParser parser = Xml.newPullParser();
+			parser.setInput(new ByteArrayInputStream(res.getBytes("UTF-8")), "UTF-8");
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				switch (eventType){
+					case XmlPullParser.START_DOCUMENT:
+						break;
+					case XmlPullParser.START_TAG:
+						if(parser.getName().equals("GeneralContainer")){
+							entity = new GeneralContainerEntity();
+							entity.setId(parser.getAttributeValue(null, "id"));
+							entity.setParentid(parser.getAttributeValue(null, "parentid"));
+							entity.setName(parser.getAttributeValue(null, "name"));
+							entity.setChildCount(parser.getAttributeValue(null, "childCount"));
+							entity.setChannelNr(parser.getAttributeValue(null, "channelNr"));
+							entity.setServiceid(parser.getAttributeValue(null, "serviceid"));
+						}
+						break;
+					case XmlPullParser.END_TAG:
+						if(parser.getName().equals("GeneralContainer")){
+							entitys.add(entity);
+							entity = null;
+						}
+						break;
+				}
+				eventType = parser.next();
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new Gson().toJson(entitys);
 	}
 
 	//获取频道列表
