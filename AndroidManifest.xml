@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.txbox.txsdk"
     android:versionCode="118"
-    android:versionName="32" 
+    android:versionName="32"
+    android:sharedUserId="android.uid.system"
     >
     <uses-sdk
         android:minSdkVersion="16"
@@ -32,6 +33,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MASTER_CLEAR"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL"/>
 
     <application
         android:allowBackup="true"

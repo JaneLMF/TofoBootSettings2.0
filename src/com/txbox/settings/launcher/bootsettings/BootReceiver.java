@@ -212,6 +212,7 @@ public class BootReceiver extends BroadcastReceiver {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 m_ivodService = IVODNavigation.Stub.asInterface(service);
                 WebServer.setVodService(m_ivodService);
+                Log.i("res", "m_serviceCon_vodNavigation.onServiceConnected");
             }
         };
 

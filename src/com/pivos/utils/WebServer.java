@@ -326,8 +326,10 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 	}
 
 	private String getContentByVod(String contentid, int contentType) {
-		ArrayList<GeneralContainerEntity> entitys = new ArrayList<GeneralContainerEntity>();
-		GeneralContainerEntity entity = null;
+//		ArrayList<GeneralContainerEntity> entitys = new ArrayList<GeneralContainerEntity>();
+//		GeneralContainerEntity entity = null;
+		ArrayList<VODProgramEntity> entitys = new ArrayList<VODProgramEntity>();
+		VODProgramEntity entity = null;
 		try {
 			String res = m_ivodService.getContent(contentid, contentType);
 			Log.d("res", "getContentByVod :" + res);
@@ -340,18 +342,34 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 					case XmlPullParser.START_DOCUMENT:
 						break;
 					case XmlPullParser.START_TAG:
-						if(parser.getName().equals("GeneralContainer")){
-							entity = new GeneralContainerEntity();
+//						if(parser.getName().equals("GeneralContainer")){
+//							entity = new GeneralContainerEntity();
+//							entity.setId(parser.getAttributeValue(null, "id"));
+//							entity.setParentid(parser.getAttributeValue(null, "parentid"));
+//							entity.setName(parser.getAttributeValue(null, "name"));
+//							entity.setChildCount(parser.getAttributeValue(null, "childCount"));
+//							entity.setChannelNr(parser.getAttributeValue(null, "channelNr"));
+//							entity.setServiceid(parser.getAttributeValue(null, "serviceid"));
+//						}
+						if (parser.getName().equals("VODProgram")) {
+							entity = new VODProgramEntity();
+							entity.setIsSerial(false);
 							entity.setId(parser.getAttributeValue(null, "id"));
-							entity.setParentid(parser.getAttributeValue(null, "parentid"));
 							entity.setName(parser.getAttributeValue(null, "name"));
-							entity.setChildCount(parser.getAttributeValue(null, "childCount"));
-							entity.setChannelNr(parser.getAttributeValue(null, "channelNr"));
-							entity.setServiceid(parser.getAttributeValue(null, "serviceid"));
+							entity.setDescription(parser.getAttributeValue(null, "description"));
+							entity.setDirector(parser.getAttributeValue(null, "director"));
+							entity.setActor(parser.getAttributeValue(null, "actor"));
+							entity.setDuration(parser.getAttributeValue(null, "duration"));
+							entity.setPlayUrls(parser.getAttributeValue(null, "playURLs"));
+							entity.setPosterURLs(parser.getAttributeValue(null, "posterURLs"));
 						}
 						break;
 					case XmlPullParser.END_TAG:
-						if(parser.getName().equals("GeneralContainer")){
+//						if(parser.getName().equals("GeneralContainer")){
+//							entitys.add(entity);
+//							entity = null;
+//						}
+						if(parser.getName().equals("VODProgram")){
 							entitys.add(entity);
 							entity = null;
 						}
