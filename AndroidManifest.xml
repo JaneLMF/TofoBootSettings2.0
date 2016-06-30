@@ -3,7 +3,6 @@
     package="com.txbox.txsdk"
     android:versionCode="118"
     android:versionName="32"
-    android:sharedUserId="android.uid.system"
     >
     <uses-sdk
         android:minSdkVersion="16"
@@ -258,6 +257,9 @@
         <service android:name="com.tvxmpp.XMPPService" >
         </service>
         <service android:name="com.tvxmpp.WindowService" >
+            <intent-filter>
+                <action android:name="com.txbox.txsdk.showstr"/>
+            </intent-filter>
         </service>                    
         <meta-data
             android:name="TA_APPKEY" android:value="A3VA23DKRR4P" />

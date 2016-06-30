@@ -31,7 +31,7 @@ public class WindowService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
-		// ´´½¨serviceÊ±ÊµÀý»¯Ò»¸öTableShowView¶ÔÏó²¢ÇÒµ÷ÓÃËûµÄfun()·½·¨°ÑËü×¢²áµ½windowManager
+		// ï¿½ï¿½ï¿½ï¿½serviceÊ±Êµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½TableShowViewï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fun()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½áµ½windowManager
 		
 		if(intent != null){
 			showText = intent.getStringExtra("showstr");
@@ -39,6 +39,8 @@ public class WindowService extends Service {
 		
 		if (showWin == null){
 			showWin = new TableShowView(getApplicationContext());
+		}else{
+			showWin.cancle();
 		}
 		L.d(WindowService.class, "showWin.fun:" + showText);
 		showWin.fun(showText);

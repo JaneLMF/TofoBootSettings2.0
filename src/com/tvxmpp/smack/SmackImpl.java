@@ -27,15 +27,21 @@ import org.jivesoftware.smackx.provider.DiscoverInfoProvider;
 import org.jivesoftware.smackx.receipts.DeliveryReceipt;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.tvxmpp.WindowService;
 import com.tvxmpp.exception.XXException;
 import com.tvxmpp.model.IXMPPDataPaser;
+import com.tvxmpp.model.Messege;
 import com.tvxmpp.model.XMPPData;
 import com.tvxmpp.model.XMPPDataPaserImpl;
 import com.tvxmpp.ui.DialogShowView;
@@ -45,23 +51,24 @@ import com.tvxmpp.util.PreferenceConstants;
 
 
 public class SmackImpl implements Smack {
-	// ¿Í»§¶ËÃû³ÆºÍÀàĞÍ¡£Ö÷ÒªÊÇÏò·şÎñÆ÷µÇ¼Ç.
-	public static final String XMPP_IDENTITY_NAME = "XMPP";// ¿Í»§¶ËÃû³Æ
-	public static final String XMPP_IDENTITY_TYPE = "tv";// ¿Í»§¶ËÀàĞÍ
-	public static final String XMPP_IDENTITY_RESOURCE = "pivos";// ¿Í»§¶ËResource
-	private static final int PACKET_TIMEOUT = 30000;// ³¬Ê±Ê±¼ä
+	// å®¢æˆ·ç«¯åç§°å’Œç±»å‹ã€‚ä¸»è¦æ˜¯å‘æœåŠ¡å™¨ç™»è®°.
+	public static final String XMPP_IDENTITY_NAME = "XMPP";// å®¢æˆ·ç«¯åç§°
+	public static final String XMPP_IDENTITY_TYPE = "tv";// å®¢æˆ·ç«¯ç±»å‹
+	public static final String XMPP_IDENTITY_RESOURCE = "pivos";// å®¢æˆ·ç«¯Resource
+	private static final int PACKET_TIMEOUT = 30000;// è¶…æ—¶æ—¶é—´
 	
 	
 	private final int SERVERPORT = 5222;
 	private final String SERVERHOST = "192.168.1.202";
 	public static final String SERVICE = "message.localserver";
+	private static final String TAG = SmackImpl.class.getSimpleName();
 
 	private Context mContext = null;
 	static {
 		registerSmackProviders();
 	}
 
-	// ×öÒ»Ğ©»ù±¾µÄÅäÖÃ
+	// åšä¸€äº›åŸºæœ¬çš„é…ç½®
 	static void registerSmackProviders() {
 		ProviderManager pm = ProviderManager.getInstance();
 		// add IQ handling
@@ -90,26 +97,26 @@ public class SmackImpl implements Smack {
 		ServiceDiscoveryManager.setIdentityType(XMPP_IDENTITY_TYPE);
 	}
 
-	private ConnectionConfiguration mXMPPConfig;// Á¬½ÓÅäÖÃ
-	private XMPPConnection mXMPPConnection;// Á¬½Ó¶ÔÏó
-	private Roster mRoster;// ÁªÏµÈË¶ÔÏó
+	private ConnectionConfiguration mXMPPConfig;// è¿æ¥é…ç½®
+	private XMPPConnection mXMPPConnection;// è¿æ¥å¯¹è±¡
+	private Roster mRoster;// è”ç³»äººå¯¹è±¡
 
-	private PacketListener mPacketListener;// ÏûÏ¢¶¯Ì¬¼àÌı
-	private PacketListener mPongListener;// ping pong·şÎñÆ÷¶¯Ì¬¼àÌı
+	private PacketListener mPacketListener;// æ¶ˆæ¯åŠ¨æ€ç›‘å¬
+	private PacketListener mPongListener;// ping pongæœåŠ¡å™¨åŠ¨æ€ç›‘å¬
 
-	// ping-pong·şÎñÆ÷
-/*	private String mPingID;// ping·şÎñÆ÷µÄid
-	private long mPingTimestamp;// Ê±¼ä´Á
-	private PendingIntent mPingAlarmPendIntent;// ÊÇÍ¨¹ıÄÖÖÓÀ´¿ØÖÆping·şÎñÆ÷µÄÊ±¼ä¼ä¸ô
-	private PendingIntent mPongTimeoutAlarmPendIntent;// ÅĞ¶Ï·şÎñÆ÷Á¬½Ó³¬Ê±µÄÄÖÖÓ
-	private static final String PING_ALARM = "com.way.xx.PING_ALARM";// ping·şÎñÆ÷ÄÖÖÓBroadcastReceiverµÄAction
-	private static final String PONG_TIMEOUT_ALARM = "com.way.xx.PONG_TIMEOUT_ALARM";// ÅĞ¶ÏÁ¬½Ó³¬Ê±µÄÄÖÖÓBroadcastReceiverµÄAction
+	// ping-pongæœåŠ¡å™¨
+/*	private String mPingID;// pingæœåŠ¡å™¨çš„id
+	private long mPingTimestamp;// æ—¶é—´æˆ³
+	private PendingIntent mPingAlarmPendIntent;// æ˜¯é€šè¿‡é—¹é’Ÿæ¥æ§åˆ¶pingæœåŠ¡å™¨çš„æ—¶é—´é—´éš”
+	private PendingIntent mPongTimeoutAlarmPendIntent;// åˆ¤æ–­æœåŠ¡å™¨è¿æ¥è¶…æ—¶çš„é—¹é’Ÿ
+	private static final String PING_ALARM = "com.way.xx.PING_ALARM";// pingæœåŠ¡å™¨é—¹é’ŸBroadcastReceiverçš„Action
+	private static final String PONG_TIMEOUT_ALARM = "com.way.xx.PONG_TIMEOUT_ALARM";// åˆ¤æ–­è¿æ¥è¶…æ—¶çš„é—¹é’ŸBroadcastReceiverçš„Action
 	private Intent mPingAlarmIntent = new Intent(PING_ALARM);
 	private Intent mPongTimeoutAlarmIntent = new Intent(PONG_TIMEOUT_ALARM);
 	private PongTimeoutAlarmReceiver mPongTimeoutAlarmReceiver = new PongTimeoutAlarmReceiver();
 	private BroadcastReceiver mPingAlarmReceiver = new PingAlarmReceiver();*/
 
-	// ping ·şÎñÆ÷
+	// ping æœåŠ¡å™¨
 
 	public SmackImpl(Context ctx) {
 		
@@ -129,11 +136,11 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public boolean login(String account, String password) throws XXException {// µÇÂ½ÊµÏÖ
+	public boolean login(String account, String password) throws XXException {// ç™»é™†å®ç°
 		
 		L.d("SmackImpl login start");
 		try {
-			if (mXMPPConnection.isConnected()) {// Ê×ÏÈÅĞ¶ÏÊÇ·ñ»¹Á¬½Ó×Å·şÎñÆ÷£¬ĞèÒªÏÈ¶Ï¿ª
+			if (mXMPPConnection.isConnected()) {// é¦–å…ˆåˆ¤æ–­æ˜¯å¦è¿˜è¿æ¥ç€æœåŠ¡å™¨ï¼Œéœ€è¦å…ˆæ–­å¼€
 				try {
 					mXMPPConnection.disconnect();
 				} catch (Exception e) {
@@ -141,7 +148,7 @@ public class SmackImpl implements Smack {
 				}
 			}
 			
-			SmackConfiguration.setPacketReplyTimeout(PACKET_TIMEOUT);// ÉèÖÃ³¬Ê±Ê±¼ä
+			SmackConfiguration.setPacketReplyTimeout(PACKET_TIMEOUT);// è®¾ç½®è¶…æ—¶æ—¶é—´
 
 			mXMPPConnection.connect();
 			if (!mXMPPConnection.isConnected()) {
@@ -149,7 +156,7 @@ public class SmackImpl implements Smack {
 			}
 			mXMPPConnection.addConnectionListener(new ConnectionListener() {
 				public void connectionClosedOnError(Exception e) {
-					//mService.postConnectionFailed(e.getMessage());// Á¬½Ó¹Ø±ÕÊ±£¬¶¯Ì¬·´À¡¸ø·şÎñ
+					//mService.postConnectionFailed(e.getMessage());// è¿æ¥å…³é—­æ—¶ï¼ŒåŠ¨æ€åé¦ˆç»™æœåŠ¡
 				}
 
 				public void connectionClosed() {
@@ -165,14 +172,14 @@ public class SmackImpl implements Smack {
 				}
 			});
 			
-			initServiceDiscovery();// Óë·şÎñÆ÷½»»¥ÏûÏ¢¼àÌı,·¢ËÍÏûÏ¢ĞèÒª»ØÖ´£¬ÅĞ¶ÏÊÇ·ñ·¢ËÍ³É¹¦
+			initServiceDiscovery();// ä¸æœåŠ¡å™¨äº¤äº’æ¶ˆæ¯ç›‘å¬,å‘é€æ¶ˆæ¯éœ€è¦å›æ‰§ï¼Œåˆ¤æ–­æ˜¯å¦å‘é€æˆåŠŸ
 			
 			// SMACK auto-logins if we were authenticated before
 			if (!mXMPPConnection.isAuthenticated()) {
 				
 				mXMPPConnection.login(account, password, XMPP_IDENTITY_RESOURCE);
 			}
-			setStatusFromConfig();// ¸üĞÂ×´Ì¬
+			setStatusFromConfig();// æ›´æ–°çŠ¶æ€
 
 		} catch (XMPPException e) {
 			L.e(SmackImpl.class, "login() XMPPException: " + Log.getStackTraceString(e));
@@ -184,23 +191,23 @@ public class SmackImpl implements Smack {
 			L.e(SmackImpl.class, "login(): " + Log.getStackTraceString(e));
 			throw new XXException(e.getLocalizedMessage(), e.getCause());
 		}
-		registerAllListener();// ×¢²á¼àÌıÆäËûµÄÊÂ¼ş£¬±ÈÈçĞÂÏûÏ¢
+		registerAllListener();// æ³¨å†Œç›‘å¬å…¶ä»–çš„äº‹ä»¶ï¼Œæ¯”å¦‚æ–°æ¶ˆæ¯
 		return mXMPPConnection.isAuthenticated();
 	}
 
 	/**
-	 * ×¢²áËùÓĞµÄ¼àÌı
+	 * æ³¨å†Œæ‰€æœ‰çš„ç›‘å¬
 	 */
 	private void registerAllListener() {
 		// actually, authenticated must be true now, or an exception must have
 		// been thrown.
 		if (isAuthenticated()) {
-			registerMessageListener();// ×¢²áĞÂÏûÏ¢¼àÌı
-			//registerPongListener();// ×¢²á·şÎñÆ÷»ØÓ¦pingÏûÏ¢¼àÌı
+			registerMessageListener();// æ³¨å†Œæ–°æ¶ˆæ¯ç›‘å¬
+			//registerPongListener();// æ³¨å†ŒæœåŠ¡å™¨å›åº”pingæ¶ˆæ¯ç›‘å¬
 		}
 	}
 
-	/************ start ĞÂÏûÏ¢´¦Àí ********************/
+	/************ start æ–°æ¶ˆæ¯å¤„ç† ********************/
 	private void registerMessageListener() {
 		// do not register multiple packet listeners
 		if (mPacketListener != null)
@@ -214,7 +221,7 @@ public class SmackImpl implements Smack {
 			public void processPacket(Packet packet) {
 				// TODO Auto-generated method stub
 				try {
-					if (packet instanceof Message) {// Èç¹ûÊÇÏûÏ¢ÀàĞÍ
+					if (packet instanceof Message) {// å¦‚æœæ˜¯æ¶ˆæ¯ç±»å‹
 						Message msg = (Message) packet;
 						String chatMessage = msg.getBody();
 						L.d("chatMessage: " + chatMessage);
@@ -231,14 +238,14 @@ public class SmackImpl implements Smack {
 						// try to extract a carbon
 						/*Carbon cc = CarbonManager.getCarbon(msg);
 						if (cc != null
-								&& cc.getDirection() == Carbon.Direction.received) {// ÊÕµ½µÄÏûÏ¢
+								&& cc.getDirection() == Carbon.Direction.received) {// æ”¶åˆ°çš„æ¶ˆæ¯
 							L.d("carbon: " + cc.toXML());
 							msg = (Message) cc.getForwarded()
 									.getForwardedPacket();
 							chatMessage = msg.getBody();
 							// fall through
 						} else if (cc != null
-								&& cc.getDirection() == Carbon.Direction.sent) {// Èç¹ûÊÇ×Ô¼º·¢ËÍµÄÏûÏ¢£¬ÔòÌí¼Óµ½Êı¾İ¿âºóÖ±½Ó·µ»Ø
+								&& cc.getDirection() == Carbon.Direction.sent) {// å¦‚æœæ˜¯è‡ªå·±å‘é€çš„æ¶ˆæ¯ï¼Œåˆ™æ·»åŠ åˆ°æ•°æ®åº“åç›´æ¥è¿”å›
 							L.d("carbon: " + cc.toXML());
 							msg = (Message) cc.getForwarded()
 									.getForwardedPacket();
@@ -248,18 +255,18 @@ public class SmackImpl implements Smack {
 							String fromJID = getJabberID(msg.getTo());
 
 							// always return after adding
-							return;// ¼ÇµÃÒª·µ»Ø
+							return;// è®°å¾—è¦è¿”å›
 						}
 
 						if (chatMessage == null) {
-							return;// Èç¹ûÏûÏ¢Îª¿Õ£¬Ö±½Ó·µ»ØÁË
+							return;// å¦‚æœæ¶ˆæ¯ä¸ºç©ºï¼Œç›´æ¥è¿”å›äº†
 						}
 
 						if (msg.getType() == Message.Type.error) {
-							chatMessage = "<Error> " + chatMessage;// ´íÎóµÄÏûÏ¢ÀàĞÍ
+							chatMessage = "<Error> " + chatMessage;// é”™è¯¯çš„æ¶ˆæ¯ç±»å‹
 						}
 
-						long ts;// ÏûÏ¢Ê±¼ä´Á
+						long ts;// æ¶ˆæ¯æ—¶é—´æˆ³
 						DelayInfo timestamp = (DelayInfo) msg.getExtension(
 								"delay", "urn:xmpp:delay");
 						if (timestamp == null)
@@ -270,7 +277,7 @@ public class SmackImpl implements Smack {
 						else
 							ts = System.currentTimeMillis();
 
-						String fromJID = getJabberID(msg.getFrom());// ÏûÏ¢À´×Ô¶ÔÏó
+						String fromJID = getJabberID(msg.getFrom());// æ¶ˆæ¯æ¥è‡ªå¯¹è±¡
 */					}
 				} catch (Exception e) {
 					// SMACK silently discards exceptions dropped from
@@ -282,7 +289,7 @@ public class SmackImpl implements Smack {
 			
 		};
 
-		mXMPPConnection.addPacketListener(mPacketListener, filter);// Ìí¼ÓPacketListener
+		mXMPPConnection.addPacketListener(mPacketListener, filter);// æ·»åŠ PacketListener
 	}
 
 	private void checkAndShowMessage(XMPPData data) {
@@ -290,27 +297,47 @@ public class SmackImpl implements Smack {
 		if (data == null)
 			return;
 		
-		String strShowMessage = MessageUtil.getShowString(data.getSubtype());
+		Messege msg = MessageUtil.getShowString(data.getSubtype());
 
-		if (strShowMessage == null){
+		if (msg == null){
 			return;
 		}
-
+		
+		if (msg.isNotify()){
+			toNotify(msg);
+		}
+		
+		String strShowMessage = msg.getMsg();
 		if (data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_INFO)){
 			showInfoMessage(strShowMessage);
 			
 		} else if(data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_WARN)){
-			showDialogMessage("¾¯¸æ", strShowMessage);
+			showDialogMessage("è­¦å‘Š", strShowMessage);
 			
 		} else if(data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_DEBUG)){
-			showDialogMessage("µ÷ÊÔ", strShowMessage);
+			showDialogMessage("è°ƒè¯•", strShowMessage);
 			
 		} else if(data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_ERROR)){
-			showDialogMessage("´íÎó", strShowMessage);
+			showDialogMessage("é”™è¯¯", strShowMessage);
 			
 		} else {
 			showInfoMessage(strShowMessage);
 		}
+	}
+
+	private void toNotify(Messege msg) {
+		Intent intent = new Intent();  
+		intent.setAction("com.txbox.txsdk.sendxmppMessege");
+		JSONObject jsonObj = new JSONObject();
+		try {
+			jsonObj.put("msgId", msg.getMsgId());
+			jsonObj.put("msg", msg.getMsg());
+		} catch (JSONException e) {
+			Log.e(TAG, "toNotify error:", e);
+		}
+		Log.d(TAG, "toNotify:" + jsonObj.toString());
+		intent.setData(Uri.parse("data:"+jsonObj.toString()));
+		mContext.sendBroadcast(intent);
 	}
 
 	private void showInfoMessage(String strMessage) {
@@ -336,7 +363,7 @@ public class SmackImpl implements Smack {
 
 
 	/**
-	 * »ñÈ¡ÁªÏµÈËÃû³Æ
+	 * è·å–è”ç³»äººåç§°
 	 * 
 	 * @param rosterEntry
 	 * @return
@@ -355,7 +382,7 @@ public class SmackImpl implements Smack {
 
 
 	/**
-	 * Óë·şÎñÆ÷½»»¥ÏûÏ¢¼àÌı,·¢ËÍÏûÏ¢ĞèÒª»ØÖ´£¬ÅĞ¶Ï¶Ô·½ÊÇ·ñÒÑ¶Á´ËÏûÏ¢
+	 * ä¸æœåŠ¡å™¨äº¤äº’æ¶ˆæ¯ç›‘å¬,å‘é€æ¶ˆæ¯éœ€è¦å›æ‰§ï¼Œåˆ¤æ–­å¯¹æ–¹æ˜¯å¦å·²è¯»æ­¤æ¶ˆæ¯
 	 */
 	private void initServiceDiscovery() {
 		// register connection features
@@ -383,7 +410,7 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public void setStatusFromConfig() {// ÉèÖÃ×Ô¼ºµÄµ±Ç°×´Ì¬£¬¹©Íâ²¿·şÎñµ÷ÓÃ
+	public void setStatusFromConfig() {// è®¾ç½®è‡ªå·±çš„å½“å‰çŠ¶æ€ï¼Œä¾›å¤–éƒ¨æœåŠ¡è°ƒç”¨
 		
 		CarbonManager.getInstanceFor(mXMPPConnection).sendCarbonsEnabled(
 				true);
@@ -391,7 +418,7 @@ public class SmackImpl implements Smack {
 		Presence presence = new Presence(Presence.Type.available);
 		Mode mode = Mode.valueOf(PreferenceConstants.AVAILABLE);
 		presence.setMode(mode);
-		presence.setStatus("ÔÚÏß");
+		presence.setStatus("åœ¨çº¿");
 		presence.setPriority(0);
 		mXMPPConnection.sendPacket(presence);
 		
@@ -399,7 +426,7 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public boolean isAuthenticated() {// ÊÇ·ñÓë·şÎñÆ÷Á¬½ÓÉÏ£¬¹©±¾ÀàºÍÍâ²¿·şÎñµ÷ÓÃ
+	public boolean isAuthenticated() {// æ˜¯å¦ä¸æœåŠ¡å™¨è¿æ¥ä¸Šï¼Œä¾›æœ¬ç±»å’Œå¤–éƒ¨æœåŠ¡è°ƒç”¨
 		if (mXMPPConnection != null) {
 			return (mXMPPConnection.isConnected() && mXMPPConnection
 					.isAuthenticated());
@@ -408,7 +435,7 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public void sendMessage(String toJID, String message) {// ·¢ËÍÏûÏ¢
+	public void sendMessage(String toJID, String message) {// å‘é€æ¶ˆæ¯
 		// TODO Auto-generated method stub
 		final Message newMessage = new Message(toJID, Message.Type.chat);
 		newMessage.setBody(message);
@@ -428,7 +455,7 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public boolean logout() {// ×¢ÏúµÇÂ¼
+	public boolean logout() {// æ³¨é”€ç™»å½•
 		L.d("unRegisterCallback()");
 		// remove callbacks _before_ tossing old connection
 		try {
@@ -454,7 +481,7 @@ public class SmackImpl implements Smack {
 	}
 
 	
-	/***************** start ´¦Àíping·şÎñÆ÷ÏûÏ¢ ***********************/
+	/***************** start å¤„ç†pingæœåŠ¡å™¨æ¶ˆæ¯ ***********************/
 	private void registerPongListener() {
 		// reset ping expectation on new connection
 	}
@@ -481,7 +508,7 @@ public class SmackImpl implements Smack {
 		}
 	}
 
-	/***************** end ´¦Àíping·şÎñÆ÷ÏûÏ¢ ***********************/
+	/***************** end å¤„ç†pingæœåŠ¡å™¨æ¶ˆæ¯ ***********************/
 	
 	
 	/**

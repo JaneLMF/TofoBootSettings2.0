@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.txbox.txsdk.R;
+import com.tencent.oma.log.util.Log;
 import com.tvxmpp.WindowService;
 import com.tvxmpp.util.DensityUtil;
 
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 public class TableShowView extends View {
 
+	protected static final String TAG = TableShowView.class.getSimpleName();
 	private Context c;
 	private WindowManager mWM; // WindowManager
 
@@ -48,6 +50,8 @@ public class TableShowView extends View {
 	
 	private Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {
+			Log.d(TAG, "handleMessage : " + msg.what);
+			
 			switch (msg.what) {
 			case MSG_HIDE_WIN:
 				hidewin();
@@ -94,10 +98,14 @@ public class TableShowView extends View {
 		mWM.updateViewLayout(win, mWMParams);
 	}
 
+	public void cancle(){
+		mHandler.removeMessages(MSG_HIDE_WIN);
+		this.removeView();
+	}
+	
 	public void removeView() {
 		try {
 			mWM.removeView(win);
-			WindowService.showWin = null;
 			isVisible = false;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -105,7 +113,7 @@ public class TableShowView extends View {
 	}
 
 	public void fun(String strText) {
-		
+		hidewin();
 		
 		isVisible = true;
 		mWM = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
