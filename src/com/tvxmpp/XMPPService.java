@@ -4,10 +4,13 @@ import com.tvxmpp.exception.XXException;
 import com.tvxmpp.smack.SmackImpl;
 import com.tvxmpp.ui.DialogShowView;
 import com.tvxmpp.util.L;
+import com.txbox.settings.data.PivosSharedPreferencesFactory;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.IBinder;
 
 public class XMPPService extends Service{
@@ -15,10 +18,8 @@ public class XMPPService extends Service{
 	//private Context mContext;
 	SmackImpl impl = null;
 	
-	private final String USER_NAME = "hmg1003";
+	private String USER_NAME = null;
 	private final String PASSWORD = "hmg1003";
-	
-	private boolean bServiceStarted = false;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -30,10 +31,20 @@ public class XMPPService extends Service{
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-		L.d("XMPPService onCreate");
-		
+		PivosSharedPreferencesFactory sp = new PivosSharedPreferencesFactory(getApplicationContext());
+		USER_NAME = sp.getXmppName();
+		if(USER_NAME == null){
+			USER_NAME = "hmg1003@message.localserver/"+getMacAddress();
+		}
+		L.d("USER_NAME:" + USER_NAME);
 	}
 
+	public String getMacAddress(){
+		WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = wifi.getConnectionInfo();
+        return info.getMacAddress().replace(":", "");
+	}
+	
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
@@ -41,7 +52,6 @@ public class XMPPService extends Service{
 		if (impl.isAuthenticated()){
 			impl.logout();
 		}
-		bServiceStarted = false;
 		super.onDestroy();
 	}
 
@@ -49,11 +59,7 @@ public class XMPPService extends Service{
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// TODO Auto-generated method stub
 		//mContext = getApplicationContext();
-		L.d("XMPPService onStartCommand");
-		if (!bServiceStarted){
-			startXMPPService();
-			bServiceStarted = true;
-		}
+		startXMPPService();
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
@@ -63,7 +69,7 @@ public class XMPPService extends Service{
 		this.startActivity(i);
 	}
 	private void startXMPPService() {
-		L.d("XMPPService startXMPPService");
+		L.d("startXMPPService");
 		impl = new SmackImpl(this);
 		
         Thread t = new Thread(new Runnable() {
@@ -74,7 +80,7 @@ public class XMPPService extends Service{
 				while(true){
 					
 					try {
-						Thread.sleep(6000);
+						Thread.sleep(60000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
