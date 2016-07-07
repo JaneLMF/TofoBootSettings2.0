@@ -157,18 +157,23 @@ public class SmackImpl implements Smack {
 			mXMPPConnection.addConnectionListener(new ConnectionListener() {
 				public void connectionClosedOnError(Exception e) {
 					//mService.postConnectionFailed(e.getMessage());// 连接关闭时，动态反馈给服务
+					L.d("connectionClosedOnError " + e.getMessage());
 				}
 
 				public void connectionClosed() {
+					L.d("connectionClosed");
 				}
 
 				public void reconnectingIn(int seconds) {
+					L.d("reconnectingIn " + seconds);
 				}
 
 				public void reconnectionFailed(Exception e) {
+					L.d("reconnectionFailed " + e.getMessage());
 				}
 
 				public void reconnectionSuccessful() {
+					L.d("reconnectionSuccessful");
 				}
 			});
 			
