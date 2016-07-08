@@ -1,5 +1,7 @@
 package com.tvxmpp.smack;
 
+import java.io.UnsupportedEncodingException;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.PacketListener;
@@ -33,6 +35,7 @@ import org.json.JSONObject;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -51,6 +54,20 @@ import com.tvxmpp.util.PreferenceConstants;
 
 
 public class SmackImpl implements Smack {
+	public static class LiveConfig{
+        //url
+        public static final String AUTHORITIES = "com.pivos.chongqinglive";
+        public static final String URL_ROOT = "content://com.pivos.chongqinglive";
+        public static final String URL_LIVE = "/live";
+
+        //uri for select
+        public static final Uri CONTENT_URI_LIVE =  Uri.parse(URL_ROOT + URL_LIVE);
+
+        //table key
+        public static final String KEY_SERVICEID = "ServiceId";
+        //code
+        public static final int CODE_QUERY_LIVE = 1;
+    }
 	// �ͻ������ƺ����͡���Ҫ����������Ǽ�.
 	public static final String XMPP_IDENTITY_NAME = "XMPP";// �ͻ�������
 	public static final String XMPP_IDENTITY_TYPE = "tv";// �ͻ�������
@@ -186,13 +203,13 @@ public class SmackImpl implements Smack {
 			setStatusFromConfig();// 更新状态
 
 		} catch (XMPPException e) {
-			L.e(SmackImpl.class, "login() XMPPException: " + Log.getStackTraceString(e));
+			L.e("login() XMPPException: " + Log.getStackTraceString(e));
 			
 			throw new XXException(e.getLocalizedMessage(),
 					e.getWrappedThrowable());
 		} catch (Exception e) {
 			// actually we just care for IllegalState or NullPointer or XMPPEx.
-			L.e(SmackImpl.class, "login(): " + Log.getStackTraceString(e));
+			L.e("login(): " + Log.getStackTraceString(e));
 			throw new XXException(e.getLocalizedMessage(), e.getCause());
 		}
 		registerAllListener();// 注册监听其他的事件，比如新消息
@@ -295,6 +312,30 @@ public class SmackImpl implements Smack {
 
 		mXMPPConnection.addPacketListener(mPacketListener, filter);// 添加PacketListener
 	}
+	
+	public String getServiceId(){
+		L.d("enter the getServiceId()");
+        String serviceid = null;
+        Cursor query = null;
+		try {
+			query = mContext.getContentResolver().query(LiveConfig.CONTENT_URI_LIVE, null, null, null, null);
+			if(query != null){
+	            if(query.moveToNext()){
+	                serviceid = query.getString(query.getColumnIndex(LiveConfig.KEY_SERVICEID));
+	            }
+	        }
+		} catch (Exception e) {
+			L.e(e.getMessage());
+			e.printStackTrace();
+		}finally {
+			if(query != null){
+				query.close();
+			}
+		}
+        
+        L.d("getServiceId : " + serviceid);
+        return serviceid;
+    }
 
 	private void checkAndShowMessage(XMPPData data) {
 		// register connection features
@@ -305,6 +346,19 @@ public class SmackImpl implements Smack {
 
 		if (msg == null){
 			return;
+		}else{
+			if(msg.getMsgId().equals("1002")){//未授权消息
+				String serviceId = getServiceId();
+				String sessionId = data.getSessionId();
+				if(serviceId == null){//未查询到serviceId
+					return;
+				}else if(sessionId == null || !sessionId.contains("_")){
+					return;
+				}else if(!serviceId.equals(data.getSessionId().split("_")[1])){
+					L.d("not match");
+					return;
+				}
+			}
 		}
 		
 		if (msg.isNotify()){

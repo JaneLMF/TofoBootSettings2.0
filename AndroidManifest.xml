@@ -3,6 +3,7 @@
     package="com.txbox.txsdk"
     android:versionCode="118"
     android:versionName="32"
+    android:sharedUserId="com.pivos.live"
     >
     <uses-sdk
         android:minSdkVersion="16"

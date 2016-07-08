@@ -169,8 +169,7 @@ public class XMPPService extends Service{
 							}
 							
 						} catch (XXException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							L.e("login: " + e.getMessage());
 						}
 					}
 					
