@@ -20,7 +20,7 @@ public interface Smack {
 	 * @throws XXException
 	 *             抛出自定义异常，以便统一处理登陆失败的问题
 	 */
-	public boolean login(String account, String password) throws XXException;
+	public boolean login(String account, String password, String resources) throws XXException;
 
 	/**
 	 * 注销登陆

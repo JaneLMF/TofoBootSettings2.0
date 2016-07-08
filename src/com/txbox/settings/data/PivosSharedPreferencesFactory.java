@@ -6,6 +6,7 @@ public class PivosSharedPreferencesFactory extends SharedPreferencesFactory {
 	private final static String FILE_NAME = "pivos_setting_config";
 	
 	private String KEY_XMPP_NAME = "xmpp_name";
+	private String KEY_MAC_ADDRESS = "mac_address";
 	
 	protected PivosSharedPreferencesFactory(Context curContext, String key) {
 		super(curContext, key);
@@ -23,4 +24,11 @@ public class PivosSharedPreferencesFactory extends SharedPreferencesFactory {
 		setValue(KEY_XMPP_NAME, xmppName);
 	}
 
+	public String getMacAddress(){
+		return getString(KEY_MAC_ADDRESS, null);
+	}
+	
+	public boolean setMacAddress(String macAddress){
+		return setValue(KEY_MAC_ADDRESS, macAddress);
+	}
 }

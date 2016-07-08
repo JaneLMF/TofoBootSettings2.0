@@ -51,11 +51,10 @@ import com.tvxmpp.util.PreferenceConstants;
 
 
 public class SmackImpl implements Smack {
-	// 客户端名称和类型。主要是向服务器登记.
-	public static final String XMPP_IDENTITY_NAME = "XMPP";// 客户端名称
-	public static final String XMPP_IDENTITY_TYPE = "tv";// 客户端类型
-	public static final String XMPP_IDENTITY_RESOURCE = "pivos";// 客户端Resource
-	private static final int PACKET_TIMEOUT = 30000;// 超时时间
+	// �ͻ������ƺ����͡���Ҫ����������Ǽ�.
+	public static final String XMPP_IDENTITY_NAME = "XMPP";// �ͻ�������
+	public static final String XMPP_IDENTITY_TYPE = "tv";// �ͻ�������
+	private static final int PACKET_TIMEOUT = 30000;// ��ʱʱ��
 	
 	
 	private final int SERVERPORT = 5222;
@@ -136,7 +135,7 @@ public class SmackImpl implements Smack {
 	}
 
 	@Override
-	public boolean login(String account, String password) throws XXException {// 登陆实现
+	public boolean login(String account, String password, String resources) throws XXException {// ��½ʵ��
 		
 		L.d("SmackImpl login start");
 		try {
@@ -182,7 +181,7 @@ public class SmackImpl implements Smack {
 			// SMACK auto-logins if we were authenticated before
 			if (!mXMPPConnection.isAuthenticated()) {
 				
-				mXMPPConnection.login(account, password, XMPP_IDENTITY_RESOURCE);
+				mXMPPConnection.login(account, password, resources);
 			}
 			setStatusFromConfig();// 更新状态
 
