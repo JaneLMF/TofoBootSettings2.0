@@ -65,6 +65,7 @@ public class SmackImpl implements Smack {
 
         //table key
         public static final String KEY_SERVICEID = "ServiceId";
+        public static final String KEY_PLAY_URL = "PlayUrl";
         //code
         public static final int CODE_QUERY_LIVE = 1;
     }
@@ -313,15 +314,15 @@ public class SmackImpl implements Smack {
 		mXMPPConnection.addPacketListener(mPacketListener, filter);// 添加PacketListener
 	}
 	
-	public String getServiceId(){
+	public String getResolverValue(String key){
 		L.d("enter the getServiceId()");
         String serviceid = null;
         Cursor query = null;
 		try {
-			query = mContext.getContentResolver().query(LiveConfig.CONTENT_URI_LIVE, null, null, null, null);
+			query = mContext.getContentResolver().query(LiveConfig.CONTENT_URI_LIVE, null, key, null, null);
 			if(query != null){
 	            if(query.moveToNext()){
-	                serviceid = query.getString(query.getColumnIndex(LiveConfig.KEY_SERVICEID));
+	                serviceid = query.getString(query.getColumnIndex(key));
 	            }
 	        }
 		} catch (Exception e) {
@@ -333,7 +334,7 @@ public class SmackImpl implements Smack {
 			}
 		}
         
-        L.d("getServiceId : " + serviceid);
+        L.d(key + " :" + serviceid);
         return serviceid;
     }
 
@@ -347,17 +348,30 @@ public class SmackImpl implements Smack {
 		if (msg == null){
 			return;
 		}else{
-			if(msg.getMsgId().equals("1002")){//未授权消息
-				String serviceId = getServiceId();
-				String sessionId = data.getSessionId();
-				if(serviceId == null){//未查询到serviceId
-					return;
-				}else if(sessionId == null || !sessionId.contains("_")){
-					return;
-				}else if(!serviceId.equals(data.getSessionId().split("_")[1])){
-					L.d("not match");
-					return;
+			if(MessageUtil.checkMsg.get(msg.getMsgId()) != null){//需要检测是否是发给自己
+				L.d("to check");
+				String value = null;
+				if(msg.getMsgId().equals("1002")){
+					value = getResolverValue(LiveConfig.KEY_SERVICEID);
+					String sessionId = data.getSessionId();
+					if(value == null){//未查询到serviceId
+						return;
+					}else if(sessionId == null || !sessionId.contains("_")){
+						return;
+					}else if(!value.equals(data.getSessionId().split("_")[1])){
+						L.d("not match");
+						return;
+					}
+				}else{
+					value = getResolverValue(LiveConfig.KEY_PLAY_URL);
+					String playUrl = data.getPrivateData();
+					L.d("xmpp playUrl:" + playUrl);
+					if(playUrl == null || !playUrl.contains(value)){
+						return;
+					}
 				}
+			}else{
+				L.d("not check");
 			}
 		}
 		
@@ -366,16 +380,16 @@ public class SmackImpl implements Smack {
 		}
 		
 		String strShowMessage = msg.getMsg();
-		if (data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_INFO)){
+		if (msg.getLeve().equalsIgnoreCase(MessageUtil.MessageType_INFO)){
 			showInfoMessage(strShowMessage);
 			
-		} else if(data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_WARN)){
+		} else if(msg.getLeve().equalsIgnoreCase(MessageUtil.MessageType_WARN)){
 			showDialogMessage("警告", strShowMessage);
 			
-		} else if(data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_DEBUG)){
+		} else if(msg.getLeve().equalsIgnoreCase(MessageUtil.MessageType_DEBUG)){
 			showDialogMessage("调试", strShowMessage);
 			
-		} else if(data.getLevel().equalsIgnoreCase(MessageUtil.MessageType_ERROR)){
+		} else if(msg.getLeve().equalsIgnoreCase(MessageUtil.MessageType_ERROR)){
 			showDialogMessage("错误", strShowMessage);
 			
 		} else {
@@ -394,7 +408,8 @@ public class SmackImpl implements Smack {
 			Log.e(TAG, "toNotify error:", e);
 		}
 		Log.d(TAG, "toNotify:" + jsonObj.toString());
-		intent.setData(Uri.parse("data:"+jsonObj.toString()));
+//		intent.setData(Uri.parse("data:"+jsonObj.toString()));
+		intent.putExtra("data", jsonObj.toString());
 		mContext.sendBroadcast(intent);
 	}
 
