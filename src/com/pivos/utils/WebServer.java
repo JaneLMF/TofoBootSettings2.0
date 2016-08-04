@@ -297,8 +297,8 @@ public class WebServer extends Thread implements org.cybergarage.http.HTTPReques
 			httpRes.setContent(tsp);
 		}
 		else if(requestName.equals("playreport")) {
-			TXbootApp app = (TXbootApp) mContext.getApplicationContext();
-			ReportHelper.playreport(app, requestParams);
+//			TXbootApp app = (TXbootApp) mContext.getApplicationContext();
+//			ReportHelper.playreport(app, requestParams);
 			httpRes.setContent("{\"code\":0,\"ret\":0,descript}");
 		}
 		else if(requestName.equals("report")) {
